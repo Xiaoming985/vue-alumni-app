@@ -9,7 +9,7 @@
         <div class="msg">
           <div>相册名称：{{ this.album.albumName }}</div>
           <div>相册描述：{{ this.album.albumDesc }}</div>
-          <div>Sum：<span>0</span></div>
+          <div>Sum：<span>{{ imgCount }}</span></div>
           <div v-show="this.album.userId == this.$store.state.userId">
             <van-button icon="edit" type="info" size="small" @click="editAlbum">编辑</van-button>
             <van-button icon="delete" type="danger" size="small" @click="deleteAlbum">删除</van-button>
@@ -22,14 +22,14 @@
       <div class="album-list-item" v-for="(item, idx) in imgList" :key="idx">
         <div class="album-list-hd">
           <div class="hd__time">
-            <span>{{item.imgTime}}</span>
+            <span>{{item.date}}</span>
             <span>
               <van-checkbox shape="square" v-if="hidden"></van-checkbox>
             </span>
           </div>
         </div>
-        <div class="images">
-          <img :src="item.imgUrl" alt="">
+        <div class="images" v-for="(item2, index2) in item.images" :key="index2">
+          <img :src="item2.imgUrl" alt="">
           <van-checkbox shape="square" v-if="hidden"></van-checkbox>
         </div>
       </div>
@@ -38,7 +38,7 @@
     <div class="tool">
       <div :class="['tool-bar', {'tool-bar__hidden': hidden}]">
         <van-button type="primary" icon="upgrade" @click="upload">上传</van-button>
-        <van-uploader ref="uploader" :after-read="afterRead" multiple></van-uploader>
+        <van-uploader ref="uploader" :after-read="afterRead" multiple v-model="fileList"></van-uploader>
         <van-button type="warning" icon="setting-o" @click="hidden = !hidden">管理</van-button>
       </div>
       <div :class="['tool-bar', {'tool-bar__visible': hidden}]">
@@ -53,15 +53,11 @@
 export default {
   data() {
     return {
-      album: {},
-      imgList: [
-        {
-          imgTime: "2020/4/17",
-          imgDesc: "真好看",
-          imgUrl: "/alumni/leave/class4/20200410_234651_2.jpg"
-        }
-      ],
-      hidden: false
+      album: {}, // 相册基本信息
+      imgCount: 0, // 图片总数
+      imgList: [], // 相册中图片列表
+      hidden: false, // 勾选框是否隐藏
+      fileList: [] // uploader读取到文件列表
     }
   },
   computed: {
@@ -75,17 +71,56 @@ export default {
     // query会在地址栏显示请求参数,params在地址栏中不显示请求参数
     // console.log(this.$route)
     let albumId = this.$route.query.albumId;
+    this.getAlbumInfo(albumId);
     this.getImg(albumId);
   },
   methods: {
-    // 获取相册的信息(包括相册的基本信息,和相册的内容)
+    // 获取相册的基本信息
+    async getAlbumInfo(albumId) {
+      let res = await this.$get('/alumni/albumController/getAlbumById', {
+        albumId: albumId
+      });
+      if(res.status == 200) {
+        this.album = res.data.album;
+        this.imgCount = res.data.imgCount;
+      }
+    },
+    // 获取相册的图片
     async getImg(albumId) {
       let res = await this.$get('/alumni/albumController/getImg', {
         albumId: albumId
       });
       if (res.status == 200) {
-        this.album = res.data.album;
-        // this.imgList = res.data.imgList;
+        // 根据时间归类
+        res.data.forEach((item, index) => {
+          var idx = -1;
+          var isExist = this.imgList.some((ele, i) => {
+            if (item.imgTime.substring(0, 10) === ele.date.substring(0, 10)) {
+              idx = i;
+              return true;
+            }
+          });
+          if (!isExist) { // 当前时间没有,添加新的时间项
+            this.imgList.push({
+              date: item.imgTime.substring(0 ,10),
+              images: [
+                {
+                  imgId: item.imgId,
+                  imgUrl: item.imgUrl,
+                  // imgTime: item.imgTime,
+                  userId: item.userId,
+                  // albumId: item.albumId
+                }
+              ]
+            });
+          } else { // 当前时间已经有了,往images里添加
+            this.imgList[idx].images.push({
+              imgId: item.imgId,
+              imgUrl: item.imgUrl,
+              userId: item.userId
+            })
+          }
+        });
       }
     },
     editAlbum() {
@@ -105,10 +140,10 @@ export default {
       this.$refs.uploader.chooseFile();
     },
     // 文件读取完成后的回调函数
-    async afterRead(files) {
+    async afterRead() {
       let fd = new FormData();
       fd.append("albumId", this.album.albumId);
-      files.forEach(element => {
+      this.fileList.forEach(element => {
         fd.append("files", element.file);
       });
       let res = await this.$post("/alumni/albumController/uploadImg", fd);
