@@ -113,7 +113,7 @@ export default {
       });
       let res = await this.$post("/alumni/albumController/uploadImg", fd);
       if (res.status == 200) {
-        
+        this.$toast("上传成功");
       }
     },
     deleteImg() {
