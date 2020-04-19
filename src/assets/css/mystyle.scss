@@ -1,0 +1,18 @@
+.my-content {
+  margin-top: 46px;
+  width: 100vw;
+  min-height: calc(100vh - 46px);
+  background-color: #f5f6fa;
+  box-sizing: border-box;
+}
+.user-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 5px;
+  box-shadow: 0 0 2px 2px #d9d9d9;
+  background-color: #fff;
+}
+img {
+  object-fit: cover;
+  max-width: 100vw;
+}
