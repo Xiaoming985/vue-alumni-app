@@ -32,7 +32,7 @@ export default {
   },
   methods: {  
     async getMyAlbum() {
-      let res = await this.$get('/alumni/albumController/getAlbumByUserId', {
+      let res = await this.$get('/alumni/albumController/getUserAlbum', {
         userId: this.$store.state.userId
       });
       if (res.status == 200) {

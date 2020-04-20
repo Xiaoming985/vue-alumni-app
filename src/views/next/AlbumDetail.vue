@@ -7,8 +7,8 @@
       <div class="album-info">
         <div class="album-cover" :style="albumCover"></div>
         <div class="msg">
-          <div>相册名称：{{ this.album.albumName }}</div>
-          <div>相册描述：{{ this.album.albumDesc }}</div>
+          <div>相册名称：{{ album.albumName }}</div>
+          <div>相册描述：{{ album.albumDesc }}</div>
           <div>Sum：<span>{{ imgCount }}</span></div>
           <div v-show="this.album.userId == this.$store.state.userId">
             <van-button icon="edit" type="info" size="small" @click="editAlbum">编辑</van-button>
@@ -82,7 +82,7 @@ export default {
       });
       if(res.status == 200) {
         this.album = res.data.album;
-        this.imgCount = res.data.imgCount;
+        // this.imgCount = res.data.imgCount;
       }
     },
     // 获取相册的图片
@@ -91,8 +91,9 @@ export default {
         albumId: albumId
       });
       if (res.status == 200) {
+        this.imgCount = res.data.imgCount;
         // 根据时间归类
-        res.data.forEach((item, index) => {
+        res.data.imgList.forEach((item, index) => {
           var idx = -1;
           var isExist = this.imgList.some((ele, i) => {
             if (item.imgTime.substring(0, 10) === ele.date.substring(0, 10)) {

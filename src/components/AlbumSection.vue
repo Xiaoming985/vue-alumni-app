@@ -3,7 +3,7 @@
     <img :src="albumInfo.albumCover" alt="">
     <span id="album-name">{{ albumInfo.albumName }}</span>
     <span id="album-desc">{{ albumInfo.albumDesc }}</span>
-    <span id="album-count">总数</span>
+    <!-- <span id="album-count">总数</span> -->
   </router-link>
 </template>
 
@@ -58,10 +58,10 @@ export default {
       font-size: 12px;
       color: #333;
     }
-    &#album-count {
-      font-size: 12px;
-      color: #7f8c8d;
-    }
+    // &#album-count {
+    //   font-size: 12px;
+    //   color: #7f8c8d;
+    // }
   }
 }
 </style>
