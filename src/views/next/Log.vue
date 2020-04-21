@@ -42,7 +42,7 @@ export default {
   },
   methods: {  
     async getMyLog() {
-      let res = await this.$get('/alumni/logController/getLogByUserId', {
+      let res = await this.$get('/alumni/logController/getLog', {
         userId: this.$store.state.userId
       });
       if (res.status == 200) {

@@ -7,10 +7,11 @@
       <div class="album-info">
         <div class="album-cover" :style="albumCover"></div>
         <div class="msg">
+          <div v-show="album.userId != $store.state.userId">用户名：{{ album.userName }}</div>
           <div>相册名称：{{ album.albumName }}</div>
           <div>相册描述：{{ album.albumDesc }}</div>
           <div>Sum：<span>{{ imgCount }}</span></div>
-          <div v-show="this.album.userId == this.$store.state.userId">
+          <div v-show="album.userId == $store.state.userId">
             <van-button icon="edit" type="info" size="small" @click="editAlbum">编辑</van-button>
             <van-button icon="delete" type="danger" size="small" @click="deleteAlbum">删除</van-button>
           </div>
@@ -21,16 +22,16 @@
     <div class="album-list">
       <div class="album-list-item" v-for="(item, idx) in imgList" :key="idx">
         <div class="album-list-hd">
-          <div class="hd__time">
-            <span>{{item.date}}</span>
-            <span>
-              <van-checkbox shape="square" v-if="hidden"></van-checkbox>
-            </span>
-          </div>
+          <span>{{item.date}}</span>
+          <span>
+            <van-checkbox shape="square" v-if="hidden"></van-checkbox>
+          </span>
         </div>
         <div class="images" v-for="(item2, index2) in item.images" :key="index2">
-          <img :src="item2.imgUrl" alt="">
-          <van-checkbox shape="square" v-if="hidden"></van-checkbox>
+          <van-checkbox-group v-model="arr">
+            <img :src="item2.imgUrl" alt="">
+            <van-checkbox shape="square" v-if="hidden" :name="item2.imgId"></van-checkbox>
+          </van-checkbox-group>
         </div>
       </div>
     </div>
@@ -57,7 +58,8 @@ export default {
       imgCount: 0, // 图片总数
       imgList: [], // 相册中图片列表
       hidden: false, // 勾选框是否隐藏
-      fileList: [] // uploader读取到文件列表
+      fileList: [], // uploader读取到文件列表
+      arr: []
     }
   },
   computed: {
@@ -129,7 +131,7 @@ export default {
     },
     deleteAlbum() {
       this.$dialog.confirm({
-        message: '删除相册不能恢复，请少主三思!'
+        message: '删除相册后无法恢复，请少主三思!'
       }).then(async () => {
 
       }).catch(() => {
@@ -149,11 +151,12 @@ export default {
       });
       let res = await this.$post("/alumni/albumController/uploadImg", fd);
       if (res.status == 200) {
+        this.getImg();
         this.$toast("上传成功");
       }
     },
     deleteImg() {
-      
+      console.log(this.arr);
     }
   }
 }
@@ -199,12 +202,12 @@ div.my-content {
     font-weight: bold;
     font-size: 14px;
     div {
-      margin-top: 10px;
-      &:nth-of-type(3) span {
+      margin-top: 5px;
+      &:nth-of-type(4) span {
         font-size: 18px;
         color: #fc0;
       }
-      &:nth-of-type(4) {
+      &:nth-of-type(5) {
         display: flex;
         justify-content: space-between;
       }
@@ -216,15 +219,14 @@ div.my-content {
   padding-left: 1vw;
   .album-list-item {
     .album-list-hd {
-      .hd__time {
-        font-weight: bold;
-        font-size: 18px;
-        display: flex;
-        // justify-content: space-between;
-        align-items: center;
-        span{
-          margin-right: 10px;
-        }
+      font-weight: bold;
+      font-size: 18px;
+      display: flex;
+      // justify-content: space-between;
+      align-items: center;
+      padding-bottom: 5px;
+      span{
+        margin-right: 10px;
       }
     }
     .images {
@@ -233,6 +235,10 @@ div.my-content {
       height: 23.75vw;
       padding-right: 1vw;
       position: relative;
+      .van-checkbox-group {
+        width: 100%;
+        height: 100%;
+      }
       img {
         width: 100%;
         height: 100%;
