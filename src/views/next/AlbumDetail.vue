@@ -23,16 +23,16 @@
       <div class="album-list-item" v-for="(item, idx) in imgList" :key="idx">
         <div class="album-list-hd">
           <span>{{item.date}}</span>
-          <span>
-            <van-checkbox shape="square" v-if="hidden"></van-checkbox>
-          </span>
+          <!-- <span>
+            <van-checkbox shape="square" v-if="hidden" v-model="checkArr[idx]" @change="change(idx)"></van-checkbox>
+          </span> -->
         </div>
-        <div class="images" v-for="(item2, index2) in item.images" :key="index2">
-          <van-checkbox-group v-model="arr">
-            <img :src="item2.imgUrl" alt="">
-            <van-checkbox shape="square" v-if="hidden" :name="item2.imgId"></van-checkbox>
-          </van-checkbox-group>
-        </div>
+        <van-checkbox-group v-model="checkArr[idx]">
+          <div class="images" v-for="(item2, index2) in item.images" :key="index2">
+            <van-checkbox shape="square" checked-color="#07c160" v-if="hidden" :name="item2.imgId"></van-checkbox>
+            <img :src="item2.imgUrl" alt="" @click="previewImg(item2.imgUrl)">
+          </div>
+        </van-checkbox-group>
       </div>
     </div>
     <!-- 底部工具栏 -->
@@ -44,13 +44,14 @@
       </div>
       <div :class="['tool-bar', {'tool-bar__visible': hidden}]">
         <van-button type="danger" icon="delete" @click="deleteImg">删除</van-button>
-        <van-button type="info" icon="cross" @click="hidden = !hidden">取消</van-button>
+        <van-button type="info" icon="cross" @click="cancel">取消</van-button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { ImagePreview } from 'vant';
 export default {
   data() {
     return {
@@ -59,7 +60,7 @@ export default {
       imgList: [], // 相册中图片列表
       hidden: false, // 勾选框是否隐藏
       fileList: [], // uploader读取到文件列表
-      arr: []
+      checkArr: []
     }
   },
   computed: {
@@ -133,7 +134,13 @@ export default {
       this.$dialog.confirm({
         message: '删除相册后无法恢复，请少主三思!'
       }).then(async () => {
-
+        let res = await this.$post("/alumni/albumController/deleteAlbum",this.$qs.stringify({
+          albumId: this.album.albumId
+        }));
+        if (res.status == 200) {
+          this.$toast("删除成功");
+          this.$router.go(-1);
+        }
       }).catch(() => {
         this.$toast("已取消");
       });
@@ -155,8 +162,61 @@ export default {
         this.$toast("上传成功");
       }
     },
+    // change(idx) {
+    //   if (this.arr[idx] == true) {
+    //     let check = document.getElementsByClassName("check")[idx];
+    //     check.toggleAll(true);
+    //   }
+    // },
+    // 删除相片
     deleteImg() {
-      console.log(this.arr);
+      this.$dialog.confirm({
+        message: '删除相片后无法恢复，请少主三思!'
+      }).then(async () => {
+        let imgIdArr = [];
+        this.checkArr.forEach(element => {
+          element.forEach(item => {
+            imgIdArr.push(item);
+          });
+        });
+        console.log(imgIdArr);
+        let res = await this.$post("/alumni/albumController/deleteImg", {
+          imgId: imgIdArr
+        });
+        if (res.status == 200) {
+          this.$toast("删除成功");
+        }
+      }).catch(() => {
+        this.$toast("已取消");
+      });
+    },
+    // 图片预览
+    previewImg(imgUrl) {
+      let imgUrlArr = [];
+      this.imgList.forEach(element => {
+        element.images.forEach(item => {
+          imgUrlArr.push(item.imgUrl);
+        });
+      });
+      let imgIndex = imgUrlArr.indexOf(imgUrl);
+      // 未进入管理状态下,即勾选框未显示的情况下,预览图片
+      if (!this.hidden) {
+        ImagePreview({
+          images: imgUrlArr,
+          showIndex: true,
+          loop: false,
+          startPosition: imgIndex
+        });
+      } else {
+        let clickDom = document.getElementsByClassName("images")[imgIndex];
+        let checkbox = clickDom.firstElementChild;
+        checkbox.click();
+      }
+    },
+    // 取消管理
+    cancel() {
+      this.hidden = !this.hidden;
+      this.checkArr = [];
     }
   }
 }

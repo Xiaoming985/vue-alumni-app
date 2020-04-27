@@ -5,8 +5,8 @@
     <van-cell-group>
       <van-cell title="个人信息" icon="contact" is-link to="/next/commonInfo" />
       <van-cell title="学籍认证" icon="idcard" is-link to="/next/academic" />
-      <van-cell title="相册" icon="photo-o" is-link to="/next/album" />
-      <van-cell title="我的日志" icon="notes-o" is-link to="/next/log" />
+      <van-cell title="相册" icon="photo-o" is-link :to="albumUrl" />
+      <van-cell title="我的日志" icon="notes-o" is-link :to="logUrl" />
       <van-cell title="设置" icon="setting-o" is-link />
     </van-cell-group>
     <van-button type="danger" block @click="logout">退出登录</van-button>
@@ -28,7 +28,12 @@ export default {
     UserCard,
   },
   computed: {
-    
+    albumUrl() {
+      return `/next/album?userId=${this.myInfo.userId}`;
+    },
+    logUrl() {
+      return `/next/log?userId=${this.myInfo.userId}`;
+    }
   },
   created() {
     this.getMyInfo().then(res => {

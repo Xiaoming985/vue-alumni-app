@@ -1,10 +1,11 @@
 <!-- 我的日志 -->
 <template>
   <div class="my-content">
-    <Cover :userInfo="myInfo"></Cover>
+    <Cover :userInfo="userInfo"></Cover>
     <div style="height: 30px;"></div>
-    <van-swipe-cell v-for="(item, index) in myLog" :key="index">
+    <van-swipe-cell v-for="(item, index) in log" :key="index">
       <div class="log-box">
+        <span>{{item.day}}</span>
         <span class="log-title"># {{item.logTitle}} #</span>
         <span>{{item.logTime.slice(0, 10)}}</span>
       </div>
@@ -17,36 +18,45 @@
 </template>
 
 <script>
-import { init } from '@/mixin/init.js'
+import { init } from '@/mixin/init.js';
 import Cover from "@/components/Cover.vue";
+import { calcDay } from "@/util/handleTime.js";
 export default {
   mixins: [init],
   data() {  
     return {
-      myInfo: {},
-      myLog: []
+      userInfo: {},
+      log: []
     }  
   },
   components: {
     Cover
   },
   created() {
-    this.$store.commit('changeTitle', '我的日志');
-    this.getMyInfo().then(res => {
-      this.myInfo = res.data.userInfo;
+    if (this.$route.query.userId == this.$store.state.userId) {
+      this.$store.commit('changeTitle', '我的日志');
+    } else {
+      this.$store.commit('changeTitle', 'Ta的日志');
+    }
+    this.getUserInfoById(this.$route.query.userId).then(res => {
+      this.userInfo = res.data[0];
     });
-    this.getMyLog();
+    this.getLog();
   },
   mounted() {
     
   },
-  methods: {  
-    async getMyLog() {
+  methods: {
+    async getLog() {
       let res = await this.$get('/alumni/logController/getLog', {
-        userId: this.$store.state.userId
+        userId: this.$route.query.userId
       });
       if (res.status == 200) {
-        this.myLog = res.data;
+        this.log = res.data;
+        this.log.forEach(item => {
+          let day = calcDay(item.logTime);
+          item.day = day;
+        });
       } else {
         
       }
@@ -65,9 +75,11 @@ export default {
   }
 }
 .log-box {
-  height: 50px;
-  border-bottom: 1px solid #d9d9d9;
-  padding: 0 30px;
+  border: 1px solid #d9d9d9;
+  border-radius: 5px;
+  // box-shadow: 0 0 2px 2px rgba($color: #000000, $alpha: 0.5);
+  margin: 10px;
+  padding: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;

@@ -7,7 +7,7 @@
         {{msg.content}}
       </div>
       <div class="images">
-        <img :src="item" alt="" v-for="(item, index) in imgList" :key="index" @click="getImg(imgList, index)">
+        <img :src="item" alt="" v-for="(item, index) in imgList" :key="index" @click="previewImg(imgList, index)">
       </div>
       <div class="content-btn">
         <div>
@@ -69,12 +69,12 @@ export default {
   },
   methods: {
     // 图片预览
-    getImg(imgList, index) {
+    previewImg(imgList, index) {
       ImagePreview({
-        images:imgList,
-        showIndex:true,
-        loop:false,
-        startPosition:index
+        images: imgList,
+        showIndex: true,
+        loop: false,
+        startPosition: index
       })
     },
     // 点赞的名字 字符串

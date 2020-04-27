@@ -3,7 +3,7 @@
   <div class="my-content">
     <van-tabs v-model="active" swipeable animated>
       <van-tab title="个人相册">
-        <AlbumSection v-for="(item, index) in myAlbums" :key="index" :albumInfo="item"></AlbumSection>
+        <AlbumSection v-for="(item, index) in userAlbums" :key="index" :albumInfo="item"></AlbumSection>
       </van-tab>
       <van-tab title="班级相册">
         <AlbumSection v-for="(item, index) in classAlbums" :key="index" :albumInfo="item"></AlbumSection>
@@ -18,7 +18,7 @@ export default {
   data() {
     return {
       active: 0,
-      myAlbums: [],
+      userAlbums: [],
       classAlbums: []
     }
   },
@@ -26,17 +26,21 @@ export default {
     AlbumSection
   },
   created() {
-    this.$store.commit('changeTitle', '我的相册');
-    this.getMyAlbum();
+    if (this.$route.query.userId == this.$store.state.userId) {
+      this.$store.commit('changeTitle', '我的相册');
+    } else {
+      this.$store.commit('changeTitle', 'Ta的相册');
+    }
+    this.getUserAlbum();
     this.getClassAlbum();
   },
   methods: {  
-    async getMyAlbum() {
+    async getUserAlbum() {
       let res = await this.$get('/alumni/albumController/getUserAlbum', {
-        userId: this.$store.state.userId
+        userId: this.$route.query.userId
       });
       if (res.status == 200) {
-        this.myAlbums = res.data;
+        this.userAlbums = res.data;
       }
     },
     async getClassAlbum() {
