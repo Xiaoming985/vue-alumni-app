@@ -158,7 +158,7 @@ export default {
       });
       let res = await this.$post("/alumni/albumController/uploadImg", fd);
       if (res.status == 200) {
-        this.getImg();
+        this.getImg(this.$route.query.albumId);
         this.$toast("上传成功");
       }
     },
@@ -180,14 +180,19 @@ export default {
           });
         });
         console.log(imgIdArr);
-        let res = await this.$post("/alumni/albumController/deleteImg", {
-          imgId: imgIdArr
-        });
+        let res = await this.$post("/alumni/albumController/deleteImg", this.$qs.stringify({
+          imgId: imgIdArr.join()
+        }));
         if (res.status == 200) {
+          this.getImg(this.$route.query.albumId);
           this.$toast("删除成功");
         }
       }).catch(() => {
-        this.$toast("已取消");
+        if (res.status == 500) {
+          this.$toast("Network Error!");
+        } else {
+          this.$toast("已取消");
+        }
       });
     },
     // 图片预览

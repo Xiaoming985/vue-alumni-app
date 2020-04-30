@@ -52,14 +52,25 @@ export default {
     },
     async onSave() {
       // 保存日志
-      let res = await this.$post('/alumni/logController/saveLog',this.$qs.stringify({
-        logTitle: this.$refs.nextChild.logTitle,
-        logContent: this.$refs.nextChild.logContent,
-        userId: this.$store.state.myInfo.userId
-      }));
+      let res;
+      if (this.$route.query.logId) {
+        // 编辑日志
+        res = await this.$post("/alumni/logController/editLog", this.$qs.stringify({
+          logId: this.$route.query.logId,
+          logTitle: this.$refs.nextChild.logTitle,
+          logContent: this.$refs.nextChild.logContent
+        }));
+      } else {
+        // 新建日志
+        res = await this.$post('/alumni/logController/saveLog',this.$qs.stringify({
+          logTitle: this.$refs.nextChild.logTitle,
+          logContent: this.$refs.nextChild.logContent,
+          userId: this.$store.state.userId
+        }));
+      }
       if (res.status == 200) {
         this.$toast.success("保存成功");
-        this.$router.push('/next/log');
+        this.$router.go(-1);
       } else if (res.status == 500) {
         this.$toast.error("网络似乎出现了问题,请稍后重试!");
       }

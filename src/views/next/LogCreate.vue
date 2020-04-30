@@ -19,9 +19,22 @@ export default {
   },
   created() {
     this.$store.commit('changeTitle', '写日志');
+    let logId = this.$route.query.logId;
+    if (logId) {
+      this.$store.commit('changeTitle', '编辑日志');
+      this.getLog(logId);
+    }
   },
   methods: {
-    
+    async getLog(logId) {
+      let res = await this.$get('/alumni/logController/getLog', {
+        logId: logId
+      });
+      if (res.status == 200) {
+        this.logTitle = res.data[0].logTitle;
+        this.logContent = res.data[0].logContent;
+      }
+    }
   }
 }
 </script>

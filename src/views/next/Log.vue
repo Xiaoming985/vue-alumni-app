@@ -5,13 +5,13 @@
     <div style="height: 30px;"></div>
     <van-swipe-cell v-for="(item, index) in log" :key="index">
       <div class="log-box">
-        <span>{{item.day}}</span>
-        <span class="log-title"># {{item.logTitle}} #</span>
         <span>{{item.logTime.slice(0, 10)}}</span>
+        <span class="log-title">{{item.logTitle}}</span>
+        <span>{{item.day}}</span>
       </div>
       <template #right>
-        <van-button square type="danger" text="删除" class="log-btn" />
-        <van-button square type="info" text="编辑" class="log-btn" />
+        <van-button square type="danger" text="删除" class="log-btn" @click="deleteLog(item.logId, index)" />
+        <van-button square type="info" text="编辑" class="log-btn" @click="editLog(item.logId)" />
       </template>
     </van-swipe-cell>
   </div>
@@ -60,6 +60,24 @@ export default {
       } else {
         
       }
+    },
+    deleteLog(logId, index) {
+      this.$dialog.confirm({
+        message: '删除日志后无法恢复，请少主三思!'
+      }).then(async () => {
+        let res = await this.$post("/alumni/logController/deleteLog", this.$qs.stringify({
+          logId: logId
+        }));
+        if (res.status == 200) {
+          this.$toast("删除成功");
+          this.log.splice(index, 1);
+        }
+      }).catch(() => {
+        this.$toast("已取消");
+      })
+    },
+    editLog(logId) {
+      this.$router.push(`/next/log-create?logId=${logId}`);
     }
   }
 }
