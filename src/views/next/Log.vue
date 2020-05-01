@@ -2,12 +2,21 @@
 <template>
   <div class="my-content">
     <Cover :userInfo="userInfo"></Cover>
-    <div style="height: 30px;"></div>
+    <div style="height: 20px;"></div>
     <van-swipe-cell v-for="(item, index) in log" :key="index">
       <div class="log-box">
-        <span>{{item.logTime.slice(0, 10)}}</span>
-        <span class="log-title">{{item.logTitle}}</span>
-        <span>{{item.day}}</span>
+        <div class="log-left">
+          <div class="log-time">
+            <div><span>{{ item.logTime.slice(8, 10) }}</span></div>
+            <div class="log-month"><span>{{ item.logTime.slice(5, 7) }}</span></div>
+          </div>
+          <div>
+            <span class="log-min">{{ item.logTime.slice(11, 16) }}</span>
+            <span class="log-title">{{item.logTitle}}</span>
+            <span class="log-day">{{ item.day }}</span>
+          </div>
+        </div>
+        <div class="year">{{ item.logTime.slice(0, 4) }}</div>
       </div>
       <template #right>
         <van-button square type="danger" text="删除" class="log-btn" @click="deleteLog(item.logId, index)" />
@@ -91,18 +100,71 @@ export default {
   &:active {
     background-color: #d9d9d9;
   }
+  &:nth-of-type(2n) {
+    .log-box {
+      border: 1px solid #fd79a8;
+      color: #fd79a8;
+      .log-month {
+        border-top: 1px solid #fd79a8;
+      }
+    }
+  }
+  &:nth-of-type(2n + 1) {
+    .log-box {
+      border: 1px solid #00cec9;
+      color: #00cec9;
+      .log-month {
+        border-top: 1px solid #00cec9;
+      }
+    }
+  }
+}
+.my-content {
+  background-image: url("../../assets/images/bg-log3.png");
+  background-size: cover;
 }
 .log-box {
-  border: 1px solid #d9d9d9;
+  // font-family: STCaiyun;
+  background-color: #fff;
   border-radius: 5px;
-  // box-shadow: 0 0 2px 2px rgba($color: #000000, $alpha: 0.5);
+  box-shadow: 2px 2px 2px 2px rgba($color: #000000, $alpha: 0.3);
   margin: 10px;
-  padding: 10px;
+  padding: 5px 10px 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  .log-title {
-    color: royalblue;
+  .log-left {
+    display: flex;
+    .log-time {
+      // font-size: 20px;
+      margin-left: 5px;
+      transform: rotate(-45deg);
+      div span {
+        display: inline-block;
+        transform: rotate(45deg);
+        padding: 5px;
+        font-weight: 600;
+      }
+    }
+    .log-min {
+      font-size: 14px;
+      margin-left: 20px;
+      display: block;
+    }
+    .log-title {
+      font-weight: bold;
+      margin-left: 20px;
+      display: block;
+      // font-size: 20px;
+    }
+    .log-day {
+      margin-left: 20px;
+      display: block;
+    }
+  }
+  .year {
+    font-size: 24px;
+    font-family: STCaiyun;
   }
 }
 .log-btn {
