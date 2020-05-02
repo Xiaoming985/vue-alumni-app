@@ -4,7 +4,7 @@
     <Cover :userInfo="userInfo"></Cover>
     <div style="height: 20px;"></div>
     <van-swipe-cell v-for="(item, index) in log" :key="index">
-      <div class="log-box">
+      <div class="log-box" @click="toLogDetail(item.logId)">
         <div class="log-left">
           <div class="log-time">
             <div><span>{{ item.logTime.slice(8, 10) }}</span></div>
@@ -87,6 +87,9 @@ export default {
     },
     editLog(logId) {
       this.$router.push(`/next/log-create?logId=${logId}`);
+    },
+    toLogDetail(logId) {
+      this.$router.push(`/next/log-detail?logId=${logId}`);
     }
   }
 }
@@ -120,12 +123,12 @@ export default {
   }
 }
 .my-content {
-  background-image: url("../../assets/images/bg-log3.png");
-  background-size: cover;
+  background-image: url("../../assets/images/bg-log2.jpg");
+  background-size: contain;
 }
 .log-box {
   // font-family: STCaiyun;
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.9);
   border-radius: 5px;
   box-shadow: 2px 2px 2px 2px rgba($color: #000000, $alpha: 0.3);
   margin: 10px;

@@ -6,6 +6,14 @@
       <img :src="item.headImage" alt="">
       <span>{{ item.userName }}</span>
     </div>
+    <div class="mask" v-show="maskShow" @click="maskShow = false">
+      <transition-group name="list" tag="div">
+        <div v-for="(item, index) in searchResult" :key="index + 1" class="contact-item" @click="toDetail(item)">
+          <img :src="item.headImage" alt="">
+          <span>{{ item.userName }}</span>
+        </div>
+      </transition-group>
+    </div>
   </div>
 </template>
 
@@ -14,7 +22,25 @@ export default {
   data() {
     return {
       value: '',
-      classmates: []
+      timer: '',
+      searchResult: [],
+      classmates: [],
+      maskShow: false
+    }
+  },
+  watch: {
+    value(newVal) {
+      this.searchResult = [];
+      if (newVal.trim() !== "") {
+        this.maskShow = true;
+        clearTimeout(this.timer);
+        this.timer = setTimeout(() => {
+          this.getUserInfo(newVal.trim());
+        }, 1000);
+      } else {
+        this.maskShow = false;
+        clearTimeout(this.timer);
+      }
     }
   },
   created() {
@@ -32,6 +58,28 @@ export default {
     // 查看通讯录好友详情
     toDetail(item) {
       this.$router.push(`/next/contact-detail?userId=${item.userId}`);
+    },
+    async getUserInfo(val) {
+      let res1 = await this.$get('/alumni/userController/getUserInfo',{
+        userName: val,
+        classId: this.$store.state.classId
+      });
+      this.searchResult = res1.data;
+      let reg_phone = /^1[3456789]\d{0,9}$/; // 验证输入的是否符合手机号格式,可以不完整
+      let res2;
+      if (reg_phone.test(val)) {
+        res2 = await this.$get('/alumni/userController/getUserInfo', {
+          phone: val,
+          classId: this.$store.state.classId
+        });
+        this.searchResult.push(...res2.data);
+      }
+      this.searchResult.forEach((item, index) => {
+        // 不包括自己
+        if (item.userId == this.$store.state.userId) {
+          this.searchResult.splice(index, 1);
+        }
+      });
     }
   }
 }
@@ -62,5 +110,21 @@ export default {
   &:active {
     background-color: #ecf0f1;
   }
+}
+.mask {
+  position: absolute;
+  overflow: hidden;
+  top: 100px;
+  z-index: 15;
+  width: 100vw;
+  min-height: calc(100vh - 100px);
+  background-color: rgba($color: #7f8c8d, $alpha: .5);
+  .contact-item {
+    transition: all 0.5s;
+  }
+}
+.list-enter {
+  opacity: 0;
+  transform: translateY(-100px);
 }
 </style>

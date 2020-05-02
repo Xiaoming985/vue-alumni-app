@@ -66,12 +66,13 @@ export default {
         let res = await this.$get('/alumni/userController/getUserByAccount',{account: this.user.account});
         if (res.status == 200) {
           this.$dialog.alert({message: '该账号已存在!'});
-        }
-        let res2 = await this.$post('/alumni/loginController/regist',this.$qs.stringify(this.user));
-        if (res2.status == 200) {
-          this.$dialog.alert({message: '注册成功,现在就去登录吧!'}).then(() => {
-            this.$router.push("/");
-          });
+        } else {
+          let res2 = await this.$post('/alumni/loginController/regist',this.$qs.stringify(this.user));
+          if (res2.status == 200) {
+            this.$dialog.alert({message: '注册成功,现在就去登录吧!'}).then(() => {
+              this.$router.push("/");
+            });
+          }
         }
       }
     }

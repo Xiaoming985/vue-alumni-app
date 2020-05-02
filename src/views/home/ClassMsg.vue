@@ -1,13 +1,13 @@
 <!-- 班级留言板 -->
 <template>
   <div class="my-content">
-    <Cover :userInfo="myInfo"></Cover>
     <van-pull-refresh
       v-model="refreshing"
       @refresh="onRefresh"
-      class=" content"
+      class="content"
       head-height="46"
     >
+      <Cover :userInfo="myInfo"></Cover>
       <van-list
         v-model="loading"
         :finished="finished"
@@ -39,8 +39,8 @@ export default {
     return {
       myInfo: {},
       msgList: [],
-      loading: false,
-      finished: false,
+      loading: false, // 是否处于加载状态，加载过程中不触发load事件
+      finished: false, // 是否已加载完成，加载完成后不再触发load事件
       refreshing: false,
       check: false, // 检查当前滚动位置,若已滚动至底部,则会触发load事件
       start: 0,
@@ -89,7 +89,7 @@ export default {
         pageSize: this.pageSize
       });
       if (res.status == 200) {
-        this.finished = res.data.length < 10 ? true : false;
+        this.finished = res.data.length < this.pageSize ? true : false;
         this.msgList.push(...res.data);
         this.msgList.forEach((item) => {
           item.msgTime = calcTime(item.msgTime);

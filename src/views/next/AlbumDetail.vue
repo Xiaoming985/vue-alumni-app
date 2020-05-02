@@ -19,22 +19,34 @@
       </div>
     </div>
     <!-- 相片列表 -->
-    <div class="album-list">
-      <div class="album-list-item" v-for="(item, idx) in imgList" :key="idx">
-        <div class="album-list-hd">
-          <span>{{item.date}}</span>
-          <!-- <span>
-            <van-checkbox shape="square" v-if="hidden" v-model="checkArr[idx]" @change="change(idx)"></van-checkbox>
-          </span> -->
-        </div>
-        <van-checkbox-group v-model="checkArr[idx]">
-          <div class="images" v-for="(item2, index2) in item.images" :key="index2">
-            <van-checkbox shape="square" checked-color="#07c160" v-if="hidden" :name="item2.imgId"></van-checkbox>
-            <img :src="item2.imgUrl" alt="" @click="previewImg(item2.imgUrl)">
+    <van-pull-refresh
+      v-model="refreshing"
+      @refresh="onRefresh"
+    >
+      <van-list
+        v-model="loading"
+        :finished="finished"
+        finished-text="我也是有底线的"
+        :immediate-check="check"
+        @load="onLoad"
+        class="album-list"
+      >
+        <div class="album-list-item" v-for="(item, idx) in imgList" :key="idx">
+          <div class="album-list-hd">
+            <span>{{item.date}}</span>
+            <!-- <span>
+              <van-checkbox shape="square" v-if="hidden" v-model="checkArr[idx]"></van-checkbox>
+            </span> -->
           </div>
-        </van-checkbox-group>
-      </div>
-    </div>
+          <van-checkbox-group v-model="checkArr[idx]">
+            <div class="images" v-for="(item2, index2) in item.images" :key="index2">
+              <van-checkbox shape="square" checked-color="#07c160" v-if="hidden" :name="item2.imgId"></van-checkbox>
+              <img :src="item2.imgUrl" alt="" @click="previewImg(item2.imgUrl)">
+            </div>
+          </van-checkbox-group>
+        </div>
+      </van-list>
+    </van-pull-refresh>
     <!-- 底部工具栏 -->
     <div class="tool">
       <div :class="['tool-bar', {'tool-bar__hidden': hidden}]">
@@ -57,6 +69,12 @@ export default {
     return {
       album: {}, // 相册基本信息
       imgCount: 0, // 图片总数
+      loading: false,
+      finished: false,
+      refreshing: false,
+      check: false, // 检查当前滚动位置,若已滚动至底部,则会触发load事件
+      start: 0,
+      pageSize: 20,
       imgList: [], // 相册中图片列表
       hidden: false, // 勾选框是否隐藏
       fileList: [], // uploader读取到文件列表
@@ -78,6 +96,24 @@ export default {
     this.getImg(albumId);
   },
   methods: {
+    onLoad() {
+      this.start += 1;
+      setTimeout(() => {
+        if (this.refreshing) {
+          this.imgList = [];
+          this.refreshing = false;
+        }
+        this.loading = false;
+        if (this.finished == false) this.getImg(this.$route.query.albumId);
+      }, 1000);
+    },
+    onRefresh() {
+      // 如果不设置false的话,假如上次已经加载完了,则finished的值依然是true,刷新时则清空了列表,不发送请求
+      this.finished = false;
+      // 重新加载数据
+      this.start = -1;
+      this.onLoad();
+    },
     // 获取相册的基本信息
     async getAlbumInfo(albumId) {
       let res = await this.$get('/alumni/albumController/getAlbumById', {
@@ -91,11 +127,15 @@ export default {
     // 获取相册的图片
     async getImg(albumId) {
       let res = await this.$get('/alumni/albumController/getImg', {
-        albumId: albumId
+        albumId: albumId,
+        start: this.start * this.pageSize,
+        pageSize: this.pageSize,
       });
       if (res.status == 200) {
+        this.start++;
         this.imgCount = res.data.imgCount;
         // 根据时间归类
+        this.finished = res.data.imgList < this.pageSize ? true : false;
         res.data.imgList.forEach((item, index) => {
           var idx = -1;
           var isExist = this.imgList.some((ele, i) => {
@@ -158,16 +198,12 @@ export default {
       });
       let res = await this.$post("/alumni/albumController/uploadImg", fd);
       if (res.status == 200) {
+        this.imgList = [];
+        this.start = 0;
         this.getImg(this.$route.query.albumId);
         this.$toast("上传成功");
       }
     },
-    // change(idx) {
-    //   if (this.arr[idx] == true) {
-    //     let check = document.getElementsByClassName("check")[idx];
-    //     check.toggleAll(true);
-    //   }
-    // },
     // 删除相片
     deleteImg() {
       this.$dialog.confirm({
@@ -179,12 +215,16 @@ export default {
             imgIdArr.push(item);
           });
         });
-        console.log(imgIdArr);
+        // console.log(this.checkArr);
+        // console.log(imgIdArr);
         let res = await this.$post("/alumni/albumController/deleteImg", this.$qs.stringify({
           imgId: imgIdArr.join()
         }));
         if (res.status == 200) {
+          this.imgList = [];
+          this.start = 0;
           this.getImg(this.$route.query.albumId);
+          // this.imgCount = this.imgCount - imgIdArr.length; // 相片总数相应减少
           this.$toast("删除成功");
         }
       }).catch(() => {

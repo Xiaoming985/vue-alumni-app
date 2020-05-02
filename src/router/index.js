@@ -85,6 +85,11 @@ const routes = [
         component: () => import('../views/next/LogCreate.vue')
       },
       {
+        path: 'log-detail',
+        name: 'LogDetail',
+        component: () => import('../views/next/LogDetail.vue')
+      },
+      {
         path: 'commonInfo',
         name: 'CommonInfo',
         component: () => import('../views/next/CommonInfo.vue')

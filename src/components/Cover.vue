@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="cover">
     <div class="bg-image"></div>
     <div class="user-box">
       <span>{{userInfo.userName}}</span>
@@ -15,6 +15,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.cover {
+  position: relative;
+}
 .bg-image {
   background-image: url('../assets/images/3.jpg');
   height: 200px;
@@ -24,7 +27,7 @@ export default {
   display: flex;
   align-items: flex-end;
   position: absolute;
-  top: 215px;
+  top: 170px;
   right: 30px;
   span {
     margin-right: 10px;

@@ -57,7 +57,7 @@ export default {
 }
 .ql-editor{
   height: calc(100vh - 174px);
-  background-image: url('../../assets/images/bg-log2.jpg');
+  background-image: url('../../assets/images/bg-log3.png');
   background-size: contain;
 }
 </style>

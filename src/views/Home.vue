@@ -10,7 +10,7 @@
       <router-view class="my-content"></router-view>
     </transition>
 
-    <van-tabbar v-model="active" route>
+    <van-tabbar v-model="active" route z-index="10">
       <van-tabbar-item icon="apps-o">校园动态</van-tabbar-item>
       <van-tabbar-item icon="home-o" to="/home/classMsg">班级留言板</van-tabbar-item>
       <van-tabbar-item icon="friends-o" to="/home/Contact">通讯录</van-tabbar-item>
