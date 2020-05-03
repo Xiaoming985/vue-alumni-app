@@ -58,7 +58,9 @@ export default {
   methods: {
     async getLog() {
       let res = await this.$get('/alumni/logController/getLog', {
-        userId: this.$route.query.userId
+        userId: this.$route.query.userId,
+        start: 0,
+        pageSize: 10
       });
       if (res.status == 200) {
         this.log = res.data;
