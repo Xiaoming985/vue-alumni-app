@@ -37,18 +37,22 @@ export default {
   methods: {  
     async getUserAlbum() {
       let res = await this.$get('/alumni/albumController/getUserAlbum', {
-        userId: this.$route.query.userId
+        userId: this.$route.query.userId,
+        start: 0,
+        pageSize: 10
       });
       if (res.status == 200) {
-        this.userAlbums = res.data;
+        this.userAlbums = res.data.albums;
       }
     },
     async getClassAlbum() {
       let res = await this.$get('/alumni/albumController/getClassAlbum', {
-        classId: this.$store.state.classId
+        classId: this.$store.state.classId,
+        start: 0,
+        pageSize: 10
       });
       if(res.status == 200) {
-        this.classAlbums = res.data;
+        this.classAlbums = res.data.albums;
       }
     }
   }
