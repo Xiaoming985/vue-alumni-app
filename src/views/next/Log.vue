@@ -62,8 +62,9 @@ export default {
         start: 0,
         pageSize: 10
       });
+      // console.log(res);
       if (res.status == 200) {
-        this.log = res.data;
+        this.log = res.data.logs;
         this.log.forEach(item => {
           let day = calcDay(item.logTime);
           item.day = day;
