@@ -1,30 +1,35 @@
 <!-- 班级留言板 -->
 <template>
-  <div class="my-content">
-    <van-pull-refresh
-      v-model="refreshing"
-      @refresh="onRefresh"
-      class="content"
-      head-height="46"
-    >
-      <Cover :userInfo="myInfo"></Cover>
-      <van-list
-        v-model="loading"
-        :finished="finished"
-        finished-text="我也是有底线的"
-        :immediate-check="check"
-        @load="onLoad"
+  <div>
+    <div class="my-content" v-if="myInfo.tag == 2">
+      <van-pull-refresh
+        v-model="refreshing"
+        @refresh="onRefresh"
+        class="content"
+        head-height="46"
       >
-        <div v-for="(item, index) in msgList" :key="index">
-          <MsgSection
-            :msg="item"
-            :userName="myInfo.userName"
-            :index="index"
-            v-on:delete="ondelete"
-          ></MsgSection>
-        </div>
-      </van-list>
-    </van-pull-refresh>
+        <Cover :userInfo="myInfo"></Cover>
+        <van-list
+          v-model="loading"
+          :finished="finished"
+          finished-text="我也是有底线的"
+          :immediate-check="check"
+          @load="onLoad"
+        >
+          <div v-for="(item, index) in msgList" :key="index">
+            <MsgSection
+              :msg="item"
+              :userName="myInfo.userName"
+              :index="index"
+              v-on:delete="ondelete"
+            ></MsgSection>
+          </div>
+        </van-list>
+      </van-pull-refresh>
+    </div>
+    <div class="my-content tip" v-else>
+      <van-empty description="请先完成学籍认证" />
+    </div>
   </div>
 </template>
 
@@ -55,13 +60,16 @@ export default {
   created() {
     this.getMyInfo().then((res) => {
       this.myInfo = res.data.userInfo;
+      if (this.myInfo.tag == 2) {
+        this.getClassMsg();
+      }
       this.$store.commit("initUserId", res.data.userInfo.userId);
       this.$store.commit("initClassId", res.data.userInfo.classId);
       this.$store.commit("changeTitle", res.data.userInfo.className);
     });
   },
   mounted() {
-    this.getClassMsg();
+    
   },
   methods: {
     onLoad() {
@@ -104,11 +112,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.my-content {
+  background-color: #fff;
+}
 .content {
   padding-bottom: 60px;
   background-color: #fff;
 }
 .van-list {
   padding-top: 10px;
+}
+.tip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>

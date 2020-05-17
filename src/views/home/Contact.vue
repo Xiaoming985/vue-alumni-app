@@ -1,26 +1,34 @@
 <!-- 通讯录 -->
 <template>
   <div>
-    <van-search clearable v-model="value" shape="round" background="#4fc08d" placeholder="输入用户名或者账号试试" />
-    <div class="contact-item" v-for="(item, index) in classmates" :key="index" @click="toDetail(item)">
-      <img :src="item.headImage" alt="">
-      <span>{{ item.userName }}</span>
+    <div class="my-content tip" v-if="show">
+      <van-empty description="请先完成学籍认证" />
     </div>
-    <div class="mask" v-show="maskShow" @click="maskShow = false">
-      <transition-group name="list" tag="div">
-        <div v-for="(item, index) in searchResult" :key="index + 1" class="contact-item" @click="toDetail(item)">
-          <img :src="item.headImage" alt="">
-          <span>{{ item.userName }}</span>
-        </div>
-      </transition-group>
+    <div v-else>
+      <van-search clearable v-model="value" shape="round" background="#4fc08d" placeholder="输入用户名或者账号试试" />
+      <div class="contact-item" v-for="(item, index) in classmates" :key="index" @click="toDetail(item)">
+        <img :src="item.headImage" alt="">
+        <span>{{ item.userName }}</span>
+      </div>
+      <div class="mask" v-show="maskShow" @click="maskShow = false">
+        <transition-group name="list" tag="div">
+          <div v-for="(item, index) in searchResult" :key="index + 1" class="contact-item" @click="toDetail(item)">
+            <img :src="item.headImage" alt="">
+            <span>{{ item.userName }}</span>
+          </div>
+        </transition-group>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import { init } from "@/mixin/init.js";
 export default {
+  mixins: [init],
   data() {
     return {
+      show: true,
       value: '',
       timer: '',
       searchResult: [],
@@ -44,7 +52,15 @@ export default {
     }
   },
   created() {
-    this.getClassmates();
+    this.getMyInfo().then(res => {
+      let myInfo = res.data.userInfo;
+      if (myInfo.tag == 2) {
+        this.show = false;
+        this.getClassmates();
+      } else {
+        this.show = true;
+      }
+    })
     this.$store.commit('changeTitle', '通讯录');
   },
   methods: {
@@ -88,6 +104,14 @@ export default {
 <style lang="scss" scoped>
 * {
   text-align: left;
+}
+.my-content {
+  background-color: #fff;
+}
+.tip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .contact-item {
   background-color: #fff;
