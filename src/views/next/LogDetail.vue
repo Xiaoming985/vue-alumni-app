@@ -29,10 +29,12 @@ export default {
   methods: {
     async getLog() {
       let res = await this.$get('/alumni/logController/getLog', {
-        logId: this.$route.query.logId
+        logId: this.$route.query.logId,
+        start: 0,
+        pageSize: 10
       });
       if (res.status == 200) {
-        this.log = res.data[0];
+        this.log = res.data.logs[0];
         this.$refs.logContent.innerHTML = this.log.logContent;
         this.log.logTime = calcTime(this.log.logTime);
       }

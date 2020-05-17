@@ -1,7 +1,7 @@
 module.exports = {
   devServer: {
     open: false,// 自动打开浏览器
-    host: 'localhost',
+    // host: 'localhost',
     port: 9000,
     https: false,
     hotOnly: false,
