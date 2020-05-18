@@ -40,7 +40,7 @@
           </div>
           <van-checkbox-group v-model="checkArr[idx]">
             <div class="images" v-for="(item2, index2) in item.images" :key="index2">
-              <van-checkbox shape="square" checked-color="#07c160" v-if="hidden" :name="item2.imgId"></van-checkbox>
+              <van-checkbox shape="square" checked-color="#07c160" v-if="hidden && userId == item2.userId" :name="item2.imgId"></van-checkbox>
               <img :src="item2.imgUrl" alt="" @click="previewImg(item2.imgUrl)">
             </div>
           </van-checkbox-group>
@@ -64,6 +64,7 @@
 
 <script>
 import { ImagePreview } from 'vant';
+import { mapGetters } from "vuex";
 export default {
   data() {
     return {
@@ -84,7 +85,8 @@ export default {
   computed: {
     albumCover() {
       return `background-image: url(${this.album.albumCover})`;
-    }
+    },
+    ...mapGetters(['userId'])
   },
   created() {
     this.$store.commit('changeTitle', '相册详情');

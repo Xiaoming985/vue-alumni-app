@@ -8,6 +8,11 @@
         placeholder="点击选择年级" @click="showGrade = true" />
       <van-field readonly clickable name="picker" :value="selectedClass" label="班级" 
         placeholder="点击选择班级" @click="showClass = true" />
+      <van-field label="证明图片">
+        <template #input>
+          <van-uploader v-model="academic" :deletable="tag == '未认证'" :max-count="1" ref="uploader"/> 
+        </template>
+      </van-field>
     </van-panel>
     <van-divider dashed :style="{ color: '#ee0a24', borderColor: '#ee0a24', padding: '0 16px' }">
       <van-icon name="info-o" />注意：提交后无法修改,请认真选择
@@ -47,6 +52,7 @@ export default {
   data() {
     return {
       tag: '未认证',
+      academic: [],
 
       selectedSchool: '',
       schoolName: [],
@@ -142,32 +148,33 @@ export default {
         this.selectedSchool = res.data.userInfo.schoolName;
         this.selectedGrade = res.data.userInfo.grade;
         this.selectedClass = res.data.userInfo.className;
+        this.academic.push({url: res.data.userInfo.academic});
         this.$refs.confirmBtn.disabled = "disabled";
       }
     },
     updateAcademic() {
+      if (this.selectedSchool == "" || this.selectedGrade == "" 
+          || this.selectedClass == "" || this.academic.length == 0) {
+        this.$toast.fail("请先完善信息");
+        return;
+      }
       this.$dialog.confirm({
         title: '温馨提示',
         message: '提交后无法修改,请认真做出选择哦!'
       }).then(async () => {
         // on confirm
-        let obj = {};
-        obj.tag = 1;
+        let fd = new FormData();
         this.classOptions.forEach(item => {
-          if(item.className === this.selectedClass) obj.classId = item.classId;
+          if(item.className === this.selectedClass) fd.append("classId", item.classId);
         })
-        let res = await this.$post('/alumni/userController/updateUserInfo',this.$qs.stringify(obj));
-        if(res.status == 200) {
-          this.$toast.success('已提交,请耐心等待审核!');
-          this.getUserInfoById();
-        }
-        else if (res.status == 500) 
-          this.$toast.fail('网络似乎出现了故障');
+        fd.append("file", this.academic[0].file);
+        let res = await this.$post('/alumni/userController/updateAcademic', fd);
+        this.$toast.success('已提交,请耐心等待审核!');
+        this.getAcademic();
       }).catch(() => {
         // on cancel
         this.$toast.fail('已取消');
       });
-      
     }
   }
 }
