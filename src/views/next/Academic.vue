@@ -170,7 +170,7 @@ export default {
         fd.append("file", this.academic[0].file);
         let res = await this.$post('/alumni/userController/updateAcademic', fd);
         this.$toast.success('已提交,请耐心等待审核!');
-        this.getAcademic();
+        // this.getAcademic();
       }).catch(() => {
         // on cancel
         this.$toast.fail('已取消');

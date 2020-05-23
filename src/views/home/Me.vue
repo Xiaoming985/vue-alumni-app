@@ -7,6 +7,7 @@
       <van-cell title="学籍认证" icon="idcard" is-link to="/next/academic" />
       <van-cell title="相册" icon="photo-o" is-link :to="albumUrl" />
       <van-cell title="我的日志" icon="notes-o" is-link :to="logUrl" />
+      <van-cell title="修改密码" icon="lock" is-link to="/next/updatePassword" />
       <van-cell title="设置" icon="setting-o" is-link />
     </van-cell-group>
     <van-button type="danger" block @click="logout">退出登录</van-button>

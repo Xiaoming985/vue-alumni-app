@@ -99,6 +99,11 @@ const routes = [
         name: 'Academic',
         component: () => import('../views/next/Academic.vue')
       },
+      {
+        path: 'updatePassword',
+        name: 'UpdatePassword',
+        component: () => import('../views/next/UpdatePassword.vue')
+      }
     ]
   }
 ]
