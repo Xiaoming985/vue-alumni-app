@@ -16,11 +16,11 @@
           :immediate-check="check"
           @load="onLoad"
         >
-          <div v-for="(item, index) in msgList" :key="index">
+          <div v-for="item in msgList" :key="item.msgId">
             <MsgSection
               :msg="item"
               :userName="myInfo.userName"
-              :index="index"
+              :index="item.msgId"
               v-on:delete="ondelete"
             ></MsgSection>
           </div>
@@ -105,7 +105,11 @@ export default {
       }
     },
     ondelete(index) {
-      this.msgList.splice(index, 1);
+      this.msgList.forEach((ele, idx) => {
+        if (ele.msgId == index) {
+          this.msgList.splice(idx, 1);
+        }
+      });
     }
   }
 };

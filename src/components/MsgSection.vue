@@ -7,7 +7,7 @@
         {{msg.content}}
       </div>
       <div class="images">
-        <img :src="item" alt="" v-for="(item, index) in imgList" :key="index" @click="previewImg(imgList, index)">
+        <img :src="item" alt="" v-for="(item, idx) in imgList" :key="idx" @click="previewImg(imgList, idx)">
       </div>
       <div class="content-btn">
         <div>
@@ -69,12 +69,12 @@ export default {
   },
   methods: {
     // 图片预览
-    previewImg(imgList, index) {
+    previewImg(imgList, idx) {
       ImagePreview({
         images: imgList,
         showIndex: true,
         loop: false,
-        startPosition: index
+        startPosition: idx
       })
     },
     // 点赞的名字 字符串
@@ -91,7 +91,7 @@ export default {
         {message: '确定要删除这条留言吗?'}
       ).then(async () => {
         this.$emit('delete', index);
-        console.log(this.msg.msgId);
+        // console.log(this.msg.msgId);
         await this.$post('/alumni/leaveController/deleteLeave',this.$qs.stringify({msgId: this.msg.msgId}));
       }).catch(() => {
         this.$toast("已取消删除");
@@ -132,6 +132,7 @@ export default {
     async cancelLike() {
       await this.$post('/alumni/leaveController/cancelPraise',this.$qs.stringify({msgId: this.msg.msgId, userId: this.userId}));
     },
+    // 评论
     async send() {
       if (this.message == '') {
         this.$toast("输入内容不能为空");
@@ -150,6 +151,7 @@ export default {
         this.message = '';
       }
     },
+    // 删除评论
     deleteCommmet(item, index) {
       if(item.userId == this.userId) {
         this.$dialog.confirm({
