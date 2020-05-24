@@ -100,17 +100,14 @@ export default {
   methods: {
     onLoad() {
       this.start += 1;
-      setTimeout(() => {
-        if (this.refreshing) {
-          this.imgList = [];
-          this.refreshing = false;
-        }
-        this.loading = false;
-        if (this.finished == false) this.getImg(this.$route.query.albumId);
-      }, 1000);
+      if (this.refreshing) {
+        this.imgList = [];
+        this.refreshing = false;
+      }
+      this.loading = false;
+      if (this.finished == false) this.getImg(this.$route.query.albumId);
     },
     onRefresh() {
-      // 如果不设置false的话,假如上次已经加载完了,则finished的值依然是true,刷新时则清空了列表,不发送请求
       this.finished = false;
       // 重新加载数据
       this.start = -1;

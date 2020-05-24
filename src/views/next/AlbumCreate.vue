@@ -50,12 +50,12 @@ export default {
         albumId: albumId
       });
       if (res.status == 200) {
-        this.albumId =res.data.albumId;
-        this.albumName = res.data.albumName;
-        this.albumDesc = res.data.albumDesc;
-        this.isClass = res.data.classId? '1' : '0';
-        this.albumCover = [{url: res.data.albumCover}];
-        this.oldUrl = res.data.albumCover;
+        this.albumId =res.data.album.albumId;
+        this.albumName = res.data.album.albumName;
+        this.albumDesc = res.data.album.albumDesc;
+        this.isClass = res.data.album.classId? '1' : '0';
+        this.albumCover = [{url: res.data.album.albumCover}];
+        this.oldUrl = res.data.album.albumCover;
       }
     },
     async createAlbum() {
