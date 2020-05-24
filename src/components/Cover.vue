@@ -3,14 +3,22 @@
     <div class="bg-image"></div>
     <div class="user-box">
       <span>{{userInfo.userName}}</span>
-      <img :src="userInfo.headImage" alt="" class="user-avatar">
+      <img :src="userInfo.headImage" alt="" class="user-avatar" @click="headClick">
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  props: ["userInfo"]
+  props: ["userInfo"],
+  methods: {
+    headClick() {
+      if (this.$route.name == "ClassMsg") {
+        this.$emit("jump");
+      }
+      // console.log(this.$route)
+    }
+  }
 }
 </script>
 

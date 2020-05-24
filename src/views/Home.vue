@@ -10,7 +10,7 @@
       <router-view class="my-content"></router-view>
     </transition>
 
-    <van-tabbar v-model="active" route z-index="10">
+    <van-tabbar v-model="active" route z-index="10" v-show="$route.name=='ClassMsg' && $route.query.userId ? false : true">
       <!-- <van-tabbar-item icon="apps-o">校园动态</van-tabbar-item> -->
       <van-tabbar-item icon="home-o" to="/home/classMsg">班级留言板</van-tabbar-item>
       <van-tabbar-item icon="friends-o" to="/home/Contact">通讯录</van-tabbar-item>
@@ -24,7 +24,9 @@
 <script>
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue'
+import { init } from "@/mixin/init.js";
 export default {
+  mixins: [init],
   data() {
     return {
       active: 0,
@@ -36,7 +38,12 @@ export default {
     },
   },
   created() {
-    
+    this.getMyInfo().then(res => {
+      this.userInfo = res.data.userInfo;
+      this.$store.commit("initUserId", res.data.userInfo.userId);
+      this.$store.commit("initClassId", res.data.userInfo.classId);
+      this.$store.commit("initUserName", res.data.userInfo.userName);
+    });
   },
   methods: {
     back(){

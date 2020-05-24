@@ -8,6 +8,7 @@ export default new Vuex.Store({
     headTitle: '',
     userId: localStorage.getItem('userId')?localStorage.getItem('userId'):'', // 我的id
     classId: localStorage.getItem('classId')?localStorage.getItem('classId'):'',// 我的班级id
+    userName: localStorage.getItem('userName')?localStorage.getItem('userName'):''
   },
   mutations: {
     changeTitle(state, title) {
@@ -19,6 +20,9 @@ export default new Vuex.Store({
     initClassId(state, classId) {
       localStorage.setItem('classId', classId);
     },
+    initUserName(state, userName) {
+      localStorage.setItem('userName', userName);
+    }
   },
   actions: {
   },

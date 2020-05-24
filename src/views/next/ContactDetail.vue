@@ -10,6 +10,7 @@
       <UserCard :userInfo="classmate"></UserCard>
       <van-cell-group>
         <van-cell title="Ta的信息" icon="contact" is-link :to="classmateURL" />
+        <van-cell title="Ta的留言" icon="chat-o" is-link :to="msgURL" />
         <van-cell title="Ta的相册" icon="photo-o" is-link :to="albumURL" />
         <van-cell title="Ta的日志" icon="notes-o" is-link :to="logURL" />
       </van-cell-group>
@@ -35,6 +36,9 @@ export default {
   computed: {
     classmateURL() {
       return `/next/classmate-info?userId=${this.classmate.userId}`;
+    },
+    msgURL() {
+      return `/home/classMsg?userId=${this.classmate.userId}`;
     },
     albumURL() {
       return `/next/album?userId=${this.classmate.userId}`;

@@ -1,14 +1,14 @@
 <!-- 班级留言板 -->
 <template>
   <div>
-    <div class="my-content" v-if="myInfo.tag == 2">
+    <div class="my-content" v-if="userInfo.tag == 2">
       <van-pull-refresh
         v-model="refreshing"
         @refresh="onRefresh"
         class="content"
         head-height="46"
       >
-        <Cover :userInfo="myInfo"></Cover>
+        <Cover :userInfo="userInfo" v-on:jump="jump"></Cover>
         <van-list
           v-model="loading"
           :finished="finished"
@@ -19,7 +19,7 @@
           <div v-for="item in msgList" :key="item.msgId">
             <MsgSection
               :msg="item"
-              :userName="myInfo.userName"
+              :userName="myName"
               :index="item.msgId"
               v-on:delete="ondelete"
             ></MsgSection>
@@ -42,7 +42,7 @@ export default {
   mixins: [init],
   data() {
     return {
-      myInfo: {},
+      userInfo: {},
       msgList: [],
       loading: false, // 是否处于加载状态，加载过程中不触发load事件
       finished: false, // 是否已加载完成，加载完成后不再触发load事件
@@ -56,17 +56,33 @@ export default {
     Cover,
     MsgSection
   },
-  computed: {},
+  computed: {
+    myName() {
+      return this.$store.state.userName;
+    }
+  },
   created() {
-    this.getMyInfo().then((res) => {
-      this.myInfo = res.data.userInfo;
-      if (this.myInfo.tag == 2) {
+    if (this.$route.query.userId) {
+      this.getUserInfoById(this.$route.query.userId).then(res => {
+        this.userInfo = res.data[0];
+      });
+      // if (this.userInfo.tag == 2) {
         this.getClassMsg();
+      // }
+      if (this.$route.query.userId == this.$store.state.userId) {
+        this.$store.commit("changeTitle", "我的留言");
+      } else {
+        this.$store.commit("changeTitle", "Ta的留言");
       }
-      this.$store.commit("initUserId", res.data.userInfo.userId);
-      this.$store.commit("initClassId", res.data.userInfo.classId);
-      this.$store.commit("changeTitle", res.data.userInfo.className);
-    });
+    } else {
+      this.getMyInfo().then((res) => {
+        this.userInfo = res.data.userInfo;
+        if (this.userInfo.tag == 2) {
+          this.getClassMsg();
+        }
+        this.$store.commit("changeTitle", res.data.userInfo.className);
+      });
+    }
   },
   mounted() {
     
@@ -93,6 +109,7 @@ export default {
     async getClassMsg() {
       let res = await this.$get("/alumni/leaveController/getLeaveByClassId", {
         classId: this.$store.state.classId,
+        userId: this.$route.query.userId ? this.$route.query.userId : "",
         start: this.start * this.pageSize,
         pageSize: this.pageSize
       });
@@ -110,6 +127,10 @@ export default {
           this.msgList.splice(idx, 1);
         }
       });
+    },
+    jump() {
+      this.$router.push(`/home/classMsg?userId=${this.$store.state.userId}`);
+      window.location.reload();
     }
   }
 };
