@@ -46,6 +46,7 @@ export default {
     // 退出
     async logout() {
       await this.$post('/alumni/loginController/logout'); // 无响应体
+      localStorage.removeItem("userId");
       this.$router.push('/');
       // window.location.replace('localhost:9000');
     }

@@ -41,12 +41,15 @@ export default {
   },
   methods: {
     async onLogin() {
+      let reg_phone = /^1[3456789]\d{9}$/;
       if (this.user.account == '' || this.user.password == '') {
         this.$dialog.alert({
           message: '账号或密码不能为空!'
         }).then(() => {
           // on close
         });
+      } else if (!reg_phone.test(this.user.account)) {
+        this.$dialog.alert({message: '手机号码格式不正确,请重新输入!'});
       } else {
         let res = await this.$post("/alumni/loginController/login",this.$qs.stringify(this.user));
         if (res.status == 200) {

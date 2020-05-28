@@ -1,6 +1,7 @@
 <template>
   <div class="common my-content">
     <van-panel title="个人信息">
+      <van-form>
       <van-field name="uploader" label="头像" clickable is-link @click="myclick">
         <template #input>
           <img :src="userInfo.headImage" alt="">
@@ -20,13 +21,15 @@
       </van-field>
       <van-field readonly clickable name="picker" :value="userInfo.birth" label="生日" placeholder="点击选择日期" @click="showDate = true" />
       <van-field v-model="userInfo.phone" type="tel" label="手机号" placeholder="输入有效手机号" readonly />
-      <van-field v-model="userInfo.email" label="邮箱" placeholder="输入有效邮箱" />
+      <van-field v-model="userInfo.email" label="邮箱" placeholder="输入有效邮箱" name="pattern" :rules="[{ pattern, message: '邮箱格式不正确' }]" />
       <van-field name="area" :value="userInfo.address" label="住址" readonly clickable
         placeholder="点击选择省市区" @click="showArea = true" />
       <van-field v-model="userInfo.motto" label="个性签名" type="textarea" autosize rows="1" placeholder="你就是这条gai最靓的仔!" />
+      </van-form>
     </van-panel>
 
     <van-button type="primary" block @click="updateUserInfo">确认</van-button>
+    
 
     <!-- 弹出层 -->
     <van-popup v-model="showDate" position="bottom">
@@ -63,6 +66,7 @@ export default {
         motto: '',
         headImage: '', // 头像路径
       },
+      pattern: /^([a-zA-Z]|[0-9])(\w|-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/,
 
       showDate: false,
 

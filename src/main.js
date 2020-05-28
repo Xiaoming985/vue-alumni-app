@@ -45,14 +45,13 @@ let options = {
 }
 Vue.use(QuillEditor, options)
 
-// router.beforeEach((to, from, next) => {
-//   //console.log(store.state, "store.state")
-//   if (store.state.account || to.path ==="/"){
-//     next();
-//   }else {
-//     next({name: 'Login'});
-//   }
-// })
+router.beforeEach((to, from, next) => {
+  if (localStorage.getItem("userId") || to.path ==="/" || to.path === "/regist"){
+    next();
+  }else {
+    next("/");
+  }
+})
 
 new Vue({
   router,
