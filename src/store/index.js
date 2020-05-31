@@ -16,12 +16,15 @@ export default new Vuex.Store({
     },
     initUserId(state, userId) {
       localStorage.setItem('userId', userId);
+      state.userId = userId;
     },
     initClassId(state, classId) {
       localStorage.setItem('classId', classId);
+      state.classId = classId;
     },
     initUserName(state, userName) {
       localStorage.setItem('userName', userName);
+      state.userName = userName;
     }
   },
   actions: {

@@ -59,6 +59,10 @@ export default {
       }
     },
     async createAlbum() {
+      if (this.albumCover.length == 0) {
+        this.$toast("请选择一个封面");
+        return;
+      }
       // 新建相册
       let fd= new FormData();
       fd.append("albumName", this.albumName);
@@ -68,7 +72,8 @@ export default {
       let res = await this.$post('/alumni/albumController/createAlbum', fd);
       if (res.status == 200) {
         // 创建成功,跳转至我的相册页面
-        this.$router.push('/next/album');
+        // this.$router.push('/next/album');
+        this.$router.go(-1);
       }
     },
     async editAlbum() {
