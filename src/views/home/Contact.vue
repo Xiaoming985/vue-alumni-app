@@ -105,9 +105,9 @@ export default {
 * {
   text-align: left;
 }
-.my-content {
-  background-color: #fff;
-}
+// .my-content {
+//   background-color: #fff;
+// }
 .tip {
   display: flex;
   align-items: center;
