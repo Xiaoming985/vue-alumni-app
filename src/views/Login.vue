@@ -53,7 +53,7 @@ export default {
       } else {
         let res = await this.$post("/alumni/loginController/login",this.$qs.stringify(this.user));
         if (res.status == 200) {
-          this.getMyInfo(res.data[0].userId).then(response => {
+          this.getMyInfo().then(response => {
             this.$store.commit('initUserId', response.data.userInfo.userId);
             this.$store.commit('initClassId', response.data.userInfo.classId);
             // this.$router.push(`/home/classMsg?userId=${response.data.userInfo.userId}`);
